@@ -13,7 +13,7 @@ print('Logged in')
 already_done = [] #this hold the submission ids for all the post that are done.
 gif =['.gif']
 newGfy='http://gfycat.com/'
-reddits = r.get_subreddit('figs')
+reddits = r.get_subreddit('SUBREDDIT')#TYPE IN YOUR APPROVED SUBREDDITS
 
 
 def urlCreator(x):
