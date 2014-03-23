@@ -46,7 +46,7 @@ def postGfy(submissions):
 			array = jstr.split("\"")
 			newUrl = newGfy+array[3]
 			try:
-				r.submit('nsfw_gfys', submissions.id, url=newUrl)
+				r.submit('SUBREDDIT YOU ARE SUBMITTING TO', submissions.id, url=newUrl)
 			except praw.errors.AlreadySubmitted:
 				print("URL already submitted... Moving on.")
 			already_done.append(submissions.id)
