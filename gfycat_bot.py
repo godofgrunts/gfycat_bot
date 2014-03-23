@@ -3,9 +3,10 @@ import uuid
 import urllib
 import requests
 import time
+import datetime
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
 
-user_agent = ("gif_2_gfy_bot 1.0 by /u/lol_gog")
+user_agent = ("gif_2_gfy_bot 2.0 by /u/lol_gog")
 r = praw.Reddit(user_agent=user_agent)
 r.login('USERNAME','PASSWORD') #CHANGE THIS FOR YOUR BOT
 print('Logged in')
@@ -13,8 +14,8 @@ print('Logged in')
 already_done = [] #this hold the submission ids for all the post that are done.
 gif =['.gif']
 newGfy='http://gfycat.com/'
-reddits = r.get_subreddit('SUBREDDIT')#TYPE IN YOUR APPROVED SUBREDDITS
-
+reddits = ['type', 'your', 'approved_subreddits', 'here']
+arraycount = len(reddits)
 
 def urlCreator(x):
 	gfy='http://upload.gfycat.com/transcode/' #gfy+uid+fetch+gifUrl
@@ -24,30 +25,44 @@ def urlCreator(x):
 	uid = uidHex[0:random]
 	return(gfy+uid+fetch+x)
 
+def postGfy(submissions):
+	time.sleep(5)
+	is_gif = any(string in submissions.url for string in gif)
+	if submissions.id not in already_done and is_gif:
+			msg = '[GIF FOUND]--->%s' % submissions.short_link
+			print(msg) #Going to leave this one up.
+			ts = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+			print(ts)
+			postUrl=submissions.short_link
+			gifUrl=submissions.url
+			gfyUrl=urlCreator(gifUrl)
+			j = urllib.request.urlopen(gfyUrl).read()
+			jstr = str(j)
+			array = jstr.split("\"")
+			newUrl = newGfy+array[3]
+			try:
+				r.submit('nsfw_gfys', submissions.id, url=newUrl)
+			except praw.errors.AlreadySubmitted:
+				print("URL already submitted... Moving on.")
+			already_done.append(submissions.id)
+
+def searchSubreddit(subs): #reddit[y]
+	sub = r.get_subreddit(subs)
+	print('Starting Process for %s hot...' % sub)
+	for hot in sub.get_hot():
+		postGfy(hot)
+	print('Starting Process for %s new...' % sub)
+	for new in sub.get_new():
+		postGfy(new)
 
 
-while True:
-	for submissions in reddits.get_hot():
-		#print(vars(comments))
-		is_gif = any(string in submissions.url for string in gif)
-		if submissions.id not in already_done and is_gif:
-				msg = '[GIF FOUND]--->%s' % submissions.short_link
-				print(msg)
-				postUrl=submissions.short_link
-				gifUrl=submissions.url
-				gfyUrl=urlCreator(gifUrl)
-				print(gfyUrl)
-				j = urllib.request.urlopen(gfyUrl).read()
-				jstr = str(j)
-				array = jstr.split("\"")
-				newUrl = newGfy+array[3]
-				print(newUrl)                              
-				post = r.get_submission(submission_id=submissions.id)
-				post.add_comment(newUrl+'\n\nThis post has been uploaded to gfycat.com! To learn more, check out gfycat.com/about')
-				already_done.append(submissions.id)
-				print(already_done)
-        time.sleep(60) #No need to run it so often I think.
+def main():
+	y = 0
+	while y+1 <= (arraycount):
+		subredditName = '%s' % reddits[y]
+		searchSubreddit(subredditName)
+		y = y + 1
+	main()
 
 
-	
-
+main()
