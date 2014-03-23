@@ -4,14 +4,19 @@ import urllib
 import requests
 import time
 import datetime
+import pickle
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
 
 user_agent = ("gif_2_gfy_bot 2.0 by /u/lol_gog")
+
+data_file = 'already.dat'
+
 r = praw.Reddit(user_agent=user_agent)
 r.login('USERNAME','PASSWORD') #CHANGE THIS FOR YOUR BOT
 print('Logged in')
 
 already_done = [] #this hold the submission ids for all the post that are done.
+
 gif =['.gif']
 newGfy='http://gfycat.com/'
 reddits = ['type', 'your', 'approved_subreddits', 'here']
@@ -45,6 +50,9 @@ def postGfy(submissions):
 			except praw.errors.AlreadySubmitted:
 				print("URL already submitted... Moving on.")
 			already_done.append(submissions.id)
+			outfile = open(data_file ,"w")
+			pickle.dump(already_done, outfile) #dump already_done to file
+			outfile.close()
 
 def searchSubreddit(subs): #reddit[y]
 	sub = r.get_subreddit(subs)
@@ -57,12 +65,16 @@ def searchSubreddit(subs): #reddit[y]
 
 
 def main():
-	y = 0
-	while y+1 <= (arraycount):
-		subredditName = '%s' % reddits[y]
-		searchSubreddit(subredditName)
-		y = y + 1
-	main()
+	try:
+		with open(data_file) as f:
+			already_done = pickle.load(f) #load already_done
+			f.close()
+	except IOError as e:
+		pass # it's ok if it doesn't exist
+	while True:
+		for reddit in reddits:
+			searchSubreddit(reddit)
+		time.sleep(60)
 
 
 main()
