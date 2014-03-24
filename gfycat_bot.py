@@ -50,7 +50,7 @@ def postGfy(submissions):
 			except praw.errors.AlreadySubmitted:
 				print("URL already submitted... Moving on.")
 			already_done.append(submissions.id)
-			outfile = open(data_file ,"wb"
+			outfile = open(data_file ,"wb")
 			pickle.dump(already_done, outfile) #dump already_done to file
 			outfile.close()
 
