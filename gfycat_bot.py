@@ -7,7 +7,7 @@ import datetime
 import pickle
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
 
-user_agent = ("gif_2_gfy_bot 2.0 by /u/lol_gog")
+user_agent = ("gif_2_gfy_bot 2.1 by /u/lol_gog")
 
 data_file = 'already.dat'
 
@@ -19,7 +19,7 @@ already_done = [] #this hold the submission ids for all the post that are done.
 
 gif =['.gif']
 newGfy='http://gfycat.com/'
-reddits = ['type', 'your', 'approved_subreddits', 'here']
+reddits = ['type', 'your', 'approved_subreddits', 'here'] # eg. reddits = ['aww', 'cute']
 arraycount = len(reddits)
 
 def urlCreator(x):
@@ -76,7 +76,8 @@ def main():
 	while True:
 		for reddit in reddits:
 			searchSubreddit(reddit)
-		time.sleep(10)
+			print("To adhere to Reddit API rules, we need to sleep for 30 seconds...")
+			time.sleep(30)
 
 
 main()
