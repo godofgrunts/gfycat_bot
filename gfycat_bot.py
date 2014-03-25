@@ -31,7 +31,7 @@ def urlCreator(x):
 	return(gfy+uid+fetch+x)
 
 def postGfy(submissions):
-	time.sleep(5)
+
 	is_gif = any(string in submissions.url for string in gif)
 	if submissions.id not in already_done and is_gif:
 			msg = '[GIF FOUND]--->%s' % submissions.short_link
@@ -40,6 +40,8 @@ def postGfy(submissions):
 			print(ts)
 			postUrl=submissions.short_link
 			gifUrl=submissions.url
+			print("Sleeping for 30 seconds to please the gfycat gods...")
+			time.sleep(30)
 			gfyUrl=urlCreator(gifUrl)
 			j = urllib.request.urlopen(gfyUrl).read()
 			jstr = str(j)
@@ -74,7 +76,7 @@ def main():
 	while True:
 		for reddit in reddits:
 			searchSubreddit(reddit)
-		time.sleep(60)
+		time.sleep(10)
 
 
 main()
