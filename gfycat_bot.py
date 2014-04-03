@@ -60,6 +60,7 @@ def postGfy(submissions):
 				r.submit('SUBREDDIT YOU ARE SUBMITTING TO', submissions.id, url=newUrl)
 			except praw.errors.AlreadySubmitted:
 				print("URL already submitted... Moving on.")
+				break
 			except urllib.error.HTTPError as e:
 				print("Reddit is down (error %s), I'll try again in 10 seconds..." % e.code)
 				time.sleep(10)
