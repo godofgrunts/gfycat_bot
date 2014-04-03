@@ -7,7 +7,7 @@ import datetime
 import pickle
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
 
-user_agent = ("gif_2_gfy_bot 2.5 by /u/lol_gog")
+user_agent = ("gif_2_gfy_bot 2.6 by /u/lol_gog")
 
 data_file = 'already.dat'
 
@@ -55,10 +55,15 @@ def postGfy(submissions):
 		jstr = str(j)
 		array = jstr.split("\"")
 		newUrl = newGfy+array[3]
-		try:
-			r.submit('SUBREDDIT YOU ARE SUBMITTING TO', submissions.id, url=newUrl)
-		except praw.errors.AlreadySubmitted:
-			print("URL already submitted... Moving on.")
+		while True:
+			try:
+				r.submit('SUBREDDIT YOU ARE SUBMITTING TO', submissions.id, url=newUrl)
+			except praw.errors.AlreadySubmitted:
+				print("URL already submitted... Moving on.")
+			except urllib.error.HTTPError as e:
+				print("Reddit is down (error %s), I'll try again in 10 seconds..." % e.code)
+				time.sleep(10)
+			break
 		already_done.append(submissions.id)
 		outfile = open(data_file, 'wb')
 		pickle.dump(already_done, outfile) #dump already_done to file
