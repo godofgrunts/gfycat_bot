@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-import requests
-import time
-import datetime
-import pickle
-import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
-import re
-=======
-from random import randint
-import uuid
-import urllib
-import requests # python -m pip install requests
+import requests #python -m pip install requests
 import time
 import datetime
 import pickle
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw python -m pip install praw
->>>>>>> origin/master
+import re
 
-user_agent = ("gif_2_gfy_bot 2.5 by /u/lol_gog")
+user_agent = ("gif_2_gfy_bot 2.7 by /u/lol_gog")
 
 data_file = 'already.dat'
 
