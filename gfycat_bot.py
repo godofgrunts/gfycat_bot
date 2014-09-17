@@ -1,11 +1,9 @@
-from random import randint
-import uuid
-import urllib
 import requests
 import time
 import datetime
 import pickle
 import praw #Python Reddit API Wrapper https://github.com/praw-dev/praw
+import re
 
 user_agent = ("gif_2_gfy_bot 2.5 by /u/lol_gog")
 
@@ -18,7 +16,9 @@ print('Logged in')
 already_done = [] #this hold the submission ids for all the post that are done.
 try:
 	with open(data_file, 'rb') as f:
+		time.sleep(5) #found that I was apparently opening and closing to fast on some systems.
 		already_done = pickle.load(f) #load already_done
+		time.sleep(5)
 		f.close()
 except IOError as e:
 	pass # it's ok if it doesn't exist
@@ -30,12 +30,9 @@ reddits = ['type', 'your', 'approved_subreddits', 'here'] # eg. reddits = ['aww'
 arraycount = len(reddits)
 
 def urlCreator(x):
-	gfy='http://upload.gfycat.com/transcode/' #gfy+uid+fetch+gifUrl
+	gfy='http://upload.gfycat.com/transcode' #gfy+fetch+gifUrl
 	fetch='?fetchUrl='
-	uidHex = (uuid.uuid4()).hex #This generates a psuedo-random alphanumeric string
-	random = randint(5,10) #gfycat requires the submission to have a unique 5-10 alphanumeric string
-	uid = uidHex[0:random]
-	return(gfy+uid+fetch+x)
+	return(gfy+fetch+x)
 
 def postGfy(submissions):
 
@@ -47,13 +44,15 @@ def postGfy(submissions):
 		ts = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
 		print(ts)
 		postUrl=submissions.short_link
-		gifUrl=submissions.url
+		oldgifUrl=submissions.url
+		gifUrl=re.sub('http://', '', oldgifUrl)
+		print(gifUrl)
 		print("Sleeping for 30 seconds to please the gfycat gods...")
 		time.sleep(30)
 		gfyUrl=urlCreator(gifUrl)
-		j = urllib.request.urlopen(gfyUrl).read()
-		jstr = str(j)
-		array = jstr.split("\"")
+		print(gfyUrl)
+		jstr = requests.get(gfyUrl)
+		array = jstr.text.split("\"")
 		newUrl = newGfy+array[3]
 		try:
 			r.submit('SUBREDDIT YOU ARE SUBMITTING TO', submissions.id, url=newUrl)
@@ -63,6 +62,8 @@ def postGfy(submissions):
 		outfile = open(data_file, 'wb')
 		pickle.dump(already_done, outfile) #dump already_done to file
 		outfile.close()
+
+
 
 def searchSubreddit(subs): #reddit[y]
 	sub = r.get_subreddit(subs)
